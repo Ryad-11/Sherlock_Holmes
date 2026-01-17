@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sherlock Holmes Expert System - Criminal Investigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', 'Georgia', serif;
+            background: linear-gradient(to bottom, #1a1410 0%, #2d2419 50%, #1a1410 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #d4c5a9;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.1) 2px, rgba(0,0,0,.1) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.1) 2px, rgba(0,0,0,.1) 4px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: linear-gradient(to bottom, #2a2116 0%, #1f1810 100%);
+            border-radius: 4px;
+            box-shadow: 
+                0 0 40px rgba(0,0,0,0.8),
+                inset 0 0 100px rgba(0,0,0,0.3),
+                0 0 0 1px #3d2f1f;
+            overflow: hidden;
+            border: 3px solid #4a3a2a;
+        }
+
+        .header {
+            background: linear-gradient(to bottom, #1a1208 0%, #0d0a06 100%);
+            color: #c9b896;
+            padding: 50px 30px;
+            text-align: center;
+            border-bottom: 4px double #8b7355;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(139, 115, 85, 0.1) 10px,
+                rgba(139, 115, 85, 0.1) 20px
+            );
+        }
+
+        .header h1 {
+            font-family: 'EB Garamond', serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            position: relative;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: #d4c5a9;
+        }
+
+        .header p {
+            opacity: 0.85;
+            font-size: 1.05em;
+            position: relative;
+            color: #a89776;
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            padding: 40px;
+            background: linear-gradient(to bottom, rgba(26, 20, 16, 0.4), rgba(20, 15, 12, 0.6));
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: linear-gradient(to bottom, #251d16 0%, #1d1610 100%);
+            padding: 30px;
+            border-radius: 2px;
+            border: 2px solid #4a3a2a;
+            box-shadow: 
+                0 4px 20px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(139, 115, 85, 0.1);
+        }
+
+        .section-title {
+            font-family: 'EB Garamond', serif;
+            font-size: 1.5em;
+            color: #d4c5a9;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #5d4a36;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .suspect-card {
+            background: linear-gradient(to bottom, #1d1610 0%, #15110c 100%);
+            border-radius: 2px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #3d2f1f;
+            box-shadow: 
+                0 3px 15px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(139, 115, 85, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .suspect-card:hover {
+            border-color: #5d4a36;
+            box-shadow: 
+                0 5px 20px rgba(0,0,0,0.7),
+                0 0 15px rgba(139, 115, 85, 0.1);
+        }
+
+        .suspect-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .suspect-name input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #4a3a2a;
+            border-radius: 2px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background: #0d0a06;
+            color: #d4c5a9;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .suspect-name input:focus {
+            outline: none;
+            border-color: #6d5a46;
+            box-shadow: 0 0 10px rgba(109, 90, 70, 0.3);
+            background: #15110c;
+        }
+
+        .remove-btn {
+            background: linear-gradient(to bottom, #5a1a1a 0%, #3d0f0f 100%);
+            color: #d4a5a5;
+            border: 2px solid #6d2a2a;
+            padding: 10px 20px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .remove-btn:hover {
+            background: linear-gradient(to bottom, #6d2a2a 0%, #5a1a1a 100%);
+            border-color: #8d3a3a;
+            box-shadow: 0 3px 10px rgba(109, 42, 42, 0.4);
+            transform: translateY(-1px);
+            color: #e4b5b5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.9em;
+            color: #a89776;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 10px 12px;
+            border: 2px solid #4a3a2a;
+            border-radius: 2px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: #0d0a06;
+            color: #d4c5a9;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #6d5a46;
+            box-shadow: 0 0 8px rgba(109, 90, 70, 0.2);
+            background: #15110c;
+        }
+
+        .category-header {
+            background: linear-gradient(to bottom, #1a1208 0%, #0d0a06 100%);
+            color: #c9b896;
+            padding: 12px 18px;
+            border-radius: 2px;
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8b7355;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .btn {
+            background: linear-gradient(to bottom, #6d5a46 0%, #5d4a36 100%);
+            color: #d4c5a9;
+            border: 2px solid #8b7355;
+            padding: 15px 40px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to bottom, #7d6a56 0%, #6d5a46 100%);
+            box-shadow: 0 5px 20px rgba(109, 90, 70, 0.4);
+            transform: translateY(-2px);
+            border-color: #9d8765;
+        }
+
+        .btn-analyze {
+            background: linear-gradient(to bottom, #3d5a1a 0%, #2d4a0a 100%);
+            color: #c9d4a9;
+            border-color: #5d7a2a;
+        }
+
+        .btn-analyze:hover {
+            background: linear-gradient(to bottom, #4d6a2a 0%, #3d5a1a 100%);
+            border-color: #6d8a3a;
+        }
+
+        .result-card {
+            background: linear-gradient(to bottom, #1d1610 0%, #15110c 100%);
+            border-radius: 2px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #3d2f1f;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.6);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #d4c5a9;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 1px;
+        }
+
+        .result-score {
+            font-size: 1.8em;
+            font-weight: 700;
+            padding: 8px 20px;
+            border-radius: 2px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .score-high {
+            background: linear-gradient(to bottom, #5a1a1a 0%, #3d0f0f 100%);
+            color: #d47777;
+            border: 2px solid #6d2a2a;
+        }
+
+        .score-medium {
+            background: linear-gradient(to bottom, #5a4a1a 0%, #3d320f 100%);
+            color: #d4aa77;
+            border: 2px solid #6d5a2a;
+        }
+
+        .score-low {
+            background: linear-gradient(to bottom, #1a4a3a 0%, #0f322a 100%);
+            color: #77c9a9;
+            border: 2px solid #2a6d5a;
+        }
+
+        .result-explanation {
+            color: #a89776;
+            font-size: 0.95em;
+            line-height: 1.6;
+            padding-top: 12px;
+            border-top: 1px solid #4a3a2a;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .evidence-badge {
+            background: linear-gradient(to bottom, #1a1208 0%, #0d0a06 100%);
+            color: #a89776;
+            padding: 6px 14px;
+            border-radius: 2px;
+            font-size: 0.8em;
+            border: 1px solid #4a3a2a;
+            font-family: 'Crimson Text', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #d4c5a9;
+            font-size: 1.2em;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 2px;
+        }
+
+        .spinner {
+            border: 4px solid #3d2f1f;
+            border-top: 4px solid #8b7355;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #a89776;
+            font-style: italic;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.1em;
+        }
+
+        #results-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SHERLOCK HOLMES EXPERT SYSTEM</h1>
+            <p>Advanced Criminal Investigation & Deductive Reasoning Engine</p>
+        </div>
+
+        <div class="content">
+            <!-- Suspect Form Section -->
+            <div class="section">
+                <h2 class="section-title">SUSPECT REGISTRATION</h2>
+                <form id="suspect-form" onsubmit="event.preventDefault(); addSuspect();">
+                    <div class="suspect-name">
+                        <input type="text" id="suspect-name" placeholder="Enter suspect's full name" required>
+                    </div>
+
+                    <!-- Physical Attributes -->
+                    <div class="category-header">PHYSICAL ATTRIBUTES</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-pointure">Shoe Size</label>
+                            <input type="number" id="suspect-pointure" min="30" max="50" placeholder="30-50">
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-taille">Height</label>
+                            <select id="suspect-taille">
+                                <option value="">-- Select --</option>
+                                <option value="petite">Short</option>
+                                <option value="moyenne">Average</option>
+                                <option value="grande">Tall</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-corpulence">Build</label>
+                            <select id="suspect-corpulence">
+                                <option value="">-- Select --</option>
+                                <option value="mince">Slim</option>
+                                <option value="normale">Normal</option>
+                                <option value="athletique">Athletic</option>
+                                <option value="forte">Heavy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-couleur_cheveux">Hair Color</label>
+                            <select id="suspect-couleur_cheveux">
+                                <option value="">-- Select --</option>
+                                <option value="blond">Blonde</option>
+                                <option value="brun">Brown</option>
+                                <option value="roux">Red</option>
+                                <option value="noir">Black</option>
+                                <option value="gris">Gray</option>
+                                <option value="chauve">Bald</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Demographic Attributes -->
+                    <div class="category-header">DEMOGRAPHIC INFORMATION</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-genre">Gender</label>
+                            <select id="suspect-genre">
+                                <option value="">-- Select --</option>
+                                <option value="homme">Male</option>
+                                <option value="femme">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-age">Age Range</label>
+                            <select id="suspect-age">
+                                <option value="">-- Select --</option>
+                                <option value="jeune">Young (18-30)</option>
+                                <option value="adulte">Adult (31-60)</option>
+                                <option value="senior">Senior (60+)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-groupe_sanguin">Blood Type</label>
+                            <select id="suspect-groupe_sanguin">
+                                <option value="">-- Select --</option>
+                                <option value="a_positif">A+</option>
+                                <option value="a_negatif">A-</option>
+                                <option value="b_positif">B+</option>
+                                <option value="b_negatif">B-</option>
+                                <option value="ab_positif">AB+</option>
+                                <option value="ab_negatif">AB-</option>
+                                <option value="o_positif">O+</option>
+                                <option value="o_negatif">O-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Socio-Economic Attributes -->
+                    <div class="category-header">SOCIO-ECONOMIC STATUS</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-profession">Profession</label>
+                            <select id="suspect-profession">
+                                <option value="">-- Select --</option>
+                                <option value="sans_emploi">Unemployed</option>
+                                <option value="employe">Employee</option>
+                                <option value="cadre">Executive</option>
+                                <option value="medecin">Doctor</option>
+                                <option value="avocat">Lawyer</option>
+                                <option value="policier">Police Officer</option>
+                                <option value="militaire">Military</option>
+                                <option value="artisan">Craftsman</option>
+                                <option value="commercant">Merchant</option>
+                                <option value="infirmier">Nurse</option>
+                                <option value="pharmacien">Pharmacist</option>
+                                <option value="chimiste">Chemist</option>
+                                <option value="vigile">Security Guard</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-situation_financiere">Financial Status</label>
+                            <select id="suspect-situation_financiere">
+                                <option value="">-- Select --</option>
+                                <option value="precaire">Precarious</option>
+                                <option value="stable">Stable</option>
+                                <option value="aisee">Comfortable</option>
+                                <option value="riche">Wealthy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-niveau_education">Education Level</label>
+                            <select id="suspect-niveau_education">
+                                <option value="">-- Select --</option>
+                                <option value="primaire">Primary</option>
+                                <option value="secondaire">Secondary</option>
+                                <option value="universitaire">University</option>
+                                <option value="post_universitaire">Post-Graduate</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Psychological Attributes -->
+                    <div class="category-header">PSYCHOLOGICAL PROFILE</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-temperament">Temperament</label>
+                            <select id="suspect-temperament">
+                                <option value="">-- Select --</option>
+                                <option value="calme">Calm</option>
+                                <option value="nerveux">Nervous</option>
+                                <option value="impulsif">Impulsive</option>
+                                <option value="violent">Violent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-casier_judiciaire">Criminal Record</label>
+                            <select id="suspect-casier_judiciaire">
+                                <option value="">-- Select --</option>
+                                <option value="vierge">Clean</option>
+                                <option value="leger">Minor</option>
+                                <option value="moyen">Moderate</option>
+                                <option value="lourd">Serious</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-stabilite_mentale">Mental Stability</label>
+                            <select id="suspect-stabilite_mentale">
+                                <option value="">-- Select --</option>
+                                <option value="stable">Stable</option>
+                                <option value="fragile">Fragile</option>
+                                <option value="instable">Unstable</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-addiction">Addiction</label>
+                            <select id="suspect-addiction">
+                                <option value="">-- Select --</option>
+                                <option value="aucune">None</option>
+                                <option value="alcool">Alcohol</option>
+                                <option value="drogue">Drugs</option>
+                                <option value="jeu">Gambling</option>
+                                <option value="tabac">Tobacco</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Contextual Attributes -->
+                    <div class="category-header">CONTEXTUAL INFORMATION</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-alibi">Alibi Status</label>
+                            <select id="suspect-alibi">
+                                <option value="">-- Select --</option>
+                                <option value="verifie">Verified</option>
+                                <option value="partiel">Partial</option>
+                                <option value="douteux">Doubtful</option>
+                                <option value="aucun">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-mobile">Motive</label>
+                            <select id="suspect-mobile">
+                                <option value="">-- Select --</option>
+                                <option value="aucun">None</option>
+                                <option value="financier">Financial</option>
+                                <option value="passionnel">Passion</option>
+                                <option value="vengeance">Revenge</option>
+                                <option value="politique">Political</option>
+                                <option value="pathologique">Pathological</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-relation_victime">Relationship to Victim</label>
+                            <select id="suspect-relation_victime">
+                                <option value="">-- Select --</option>
+                                <option value="inconnu">Unknown</option>
+                                <option value="famille">Family</option>
+                                <option value="ami">Friend</option>
+                                <option value="collegue">Colleague</option>
+                                <option value="rival">Rival</option>
+                                <option value="ennemi">Enemy</option>
+                                <option value="ex_conjoint">Ex-Spouse</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-proximite_scene">Proximity to Scene</label>
+                            <select id="suspect-proximite_scene">
+                                <option value="">-- Select --</option>
+                                <option value="resident">Resident</option>
+                                <option value="voisin">Neighbor</option>
+                                <option value="passant_regulier">Regular Passerby</option>
+                                <option value="etranger">Stranger</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Behavioral Attributes -->
+                    <div class="category-header">BEHAVIORAL CHARACTERISTICS</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="suspect-habitude_nocturne">Nocturnal Habits</label>
+                            <select id="suspect-habitude_nocturne">
+                                <option value="">-- Select --</option>
+                                <option value="actif">Active at Night</option>
+                                <option value="inactif">Inactive at Night</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-acces_armes">Access to Weapons</label>
+                            <select id="suspect-acces_armes">
+                                <option value="">-- Select --</option>
+                                <option value="aucun">None</option>
+                                <option value="legal">Legal</option>
+                                <option value="illegal">Illegal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-formation_combat">Combat Training</label>
+                            <select id="suspect-formation_combat">
+                                <option value="">-- Select --</option>
+                                <option value="aucune">None</option>
+                                <option value="basique">Basic</option>
+                                <option value="avancee">Advanced</option>
+                                <option value="professionnelle">Professional</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspect-competence_informatique">Computer Skills</label>
+                            <select id="suspect-competence_informatique">
+                                <option value="">-- Select --</option>
+                                <option value="aucune">None</option>
+                                <option value="basique">Basic</option>
+                                <option value="avancee">Advanced</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn">ADD SUSPECT TO DATABASE</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Suspects List Section -->
+            <div class="section">
+                <h2 class="section-title">REGISTERED SUSPECTS</h2>
+                <div id="suspects-list">
+                    <div class="empty-state">No suspects in database</div>
+                </div>
+            </div>
+
+            <!-- Evidence Section -->
+            <div class="section">
+                <h2 class="section-title">CRIME SCENE EVIDENCE</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="empreinte_pointure">Footprint Size</label>
+                        <input type="number" id="empreinte_pointure" min="30" max="50" placeholder="30-50 or leave empty">
+                    </div>
+                    <div class="form-group">
+                        <label for="adn_genre">DNA Gender</label>
+                        <select id="adn_genre">
+                            <option value="inconnu">Unknown</option>
+                            <option value="homme">Male</option>
+                            <option value="femme">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupe_sanguin_scene">Blood Type Found</label>
+                        <select id="groupe_sanguin_scene">
+                            <option value="inconnu">Unknown</option>
+                            <option value="a_positif">A+</option>
+                            <option value="a_negatif">A-</option>
+                            <option value="b_positif">B+</option>
+                            <option value="b_negatif">B-</option>
+                            <option value="ab_positif">AB+</option>
+                            <option value="ab_negatif">AB-</option>
+                            <option value="o_positif">O+</option>
+                            <option value="o_negatif">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cheveux_couleur">Hair Color Found</label>
+                        <select id="cheveux_couleur">
+                            <option value="inconnu">Unknown</option>
+                            <option value="blond">Blonde</option>
+                            <option value="brun">Brown</option>
+                            <option value="roux">Red</option>
+                            <option value="noir">Black</option>
+                            <option value="gris">Gray</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="arme">Weapon Used</label>
+                        <select id="arme">
+                            <option value="inconnu">Unknown</option>
+                            <option value="couteau">Knife</option>
+                            <option value="pistolet">Pistol</option>
+                            <option value="revolver">Revolver</option>
+                            <option value="fusil">Rifle</option>
+                            <option value="hache">Axe</option>
+                            <option value="masse">Mace</option>
+                            <option value="barre_fer">Iron Bar</option>
+                            <option value="marteau">Hammer</option>
+                            <option value="machete">Machete</option>
+                            <option value="poison">Poison</option>
+                            <option value="strangulation">Strangulation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile_presume">Presumed Motive</label>
+                        <select id="mobile_presume">
+                            <option value="inconnu">Unknown</option>
+                            <option value="financier">Financial</option>
+                            <option value="passionnel">Passion</option>
+                            <option value="vengeance">Revenge</option>
+                            <option value="pathologique">Pathological</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="heure_crime">Time of Crime</label>
+                        <select id="heure_crime">
+                            <option value="inconnu">Unknown</option>
+                            <option value="jour">Day</option>
+                            <option value="nuit">Night</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="btn btn-analyze" onclick="analyzeCase()">BEGIN DEDUCTIVE ANALYSIS</button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="section">
+                <h2 class="section-title">INVESTIGATION RESULTS</h2>
+                <div id="results-container">
+                    <div class="empty-state">Results will appear here after analysis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let suspects = [];
+        let suspectIdCounter = 1;
+
+        // Get current suspect form data
+        function getCurrentSuspectData() {
+            const nom = document.getElementById('suspect-name').value.trim();
+            if (!nom) {
+                alert('Please enter suspect name');
+                return null;
+            }
+
+            const caracteristiques = {};
+            
+            // Physical
+            const pointure = document.getElementById('suspect-pointure').value;
+            if (pointure) caracteristiques.pointure = parseInt(pointure);
+            const taille = document.getElementById('suspect-taille').value;
+            if (taille) caracteristiques.taille = taille;
+            const corpulence = document.getElementById('suspect-corpulence').value;
+            if (corpulence) caracteristiques.corpulence = corpulence;
+            const couleur_cheveux = document.getElementById('suspect-couleur_cheveux').value;
+            if (couleur_cheveux) caracteristiques.couleur_cheveux = couleur_cheveux;
+            
+            // Demographic
+            const genre = document.getElementById('suspect-genre').value;
+            if (genre) caracteristiques.genre = genre;
+            const age = document.getElementById('suspect-age').value;
+            if (age) caracteristiques.age = age;
+            const groupe_sanguin = document.getElementById('suspect-groupe_sanguin').value;
+            if (groupe_sanguin) caracteristiques.groupe_sanguin = groupe_sanguin;
+            
+            // Contextual
+            const alibi = document.getElementById('suspect-alibi').value;
+            if (alibi) caracteristiques.alibi = alibi;
+            const mobile = document.getElementById('suspect-mobile').value;
+            if (mobile) caracteristiques.mobile = mobile;
+            const relation_victime = document.getElementById('suspect-relation_victime').value;
+            if (relation_victime) caracteristiques.relation_victime = relation_victime;
+            const proximite_scene = document.getElementById('suspect-proximite_scene').value;
+            if (proximite_scene) caracteristiques.proximite_scene = proximite_scene;
+            
+            // Professional
+            const profession = document.getElementById('suspect-profession').value;
+            if (profession) caracteristiques.profession = profession;
+            const situation_financiere = document.getElementById('suspect-situation_financiere').value;
+            if (situation_financiere) caracteristiques.situation_financiere = situation_financiere;
+            const niveau_education = document.getElementById('suspect-niveau_education').value;
+            if (niveau_education) caracteristiques.niveau_education = niveau_education;
+            
+            // Psychological
+            const temperament = document.getElementById('suspect-temperament').value;
+            if (temperament) caracteristiques.temperament = temperament;
+            const casier_judiciaire = document.getElementById('suspect-casier_judiciaire').value;
+            if (casier_judiciaire) caracteristiques.casier_judiciaire = casier_judiciaire;
+            const stabilite_mentale = document.getElementById('suspect-stabilite_mentale').value;
+            if (stabilite_mentale) caracteristiques.stabilite_mentale = stabilite_mentale;
+            const addiction = document.getElementById('suspect-addiction').value;
+            if (addiction) caracteristiques.addiction = addiction;
+            
+            // Behavioral
+            const habitude_nocturne = document.getElementById('suspect-habitude_nocturne').value;
+            if (habitude_nocturne) caracteristiques.habitude_nocturne = habitude_nocturne;
+            const acces_armes = document.getElementById('suspect-acces_armes').value;
+            if (acces_armes) caracteristiques.acces_armes = acces_armes;
+            const formation_combat = document.getElementById('suspect-formation_combat').value;
+            if (formation_combat) caracteristiques.formation_combat = formation_combat;
+            const competence_informatique = document.getElementById('suspect-competence_informatique').value;
+            if (competence_informatique) caracteristiques.competence_informatique = competence_informatique;
+
+            return { nom, caracteristiques };
+        }
+
+        // Clear form
+        function clearSuspectForm() {
+            document.getElementById('suspect-name').value = '';
+            document.querySelectorAll('#suspect-form select').forEach(select => select.selectedIndex = 0);
+            document.querySelectorAll('#suspect-form input[type="number"]').forEach(input => input.value = '');
+        }
+
+        // Add suspect
+        async function addSuspect() {
+            const suspectData = getCurrentSuspectData();
+            if (!suspectData) return;
+
+            const suspect = {
+                id: suspectIdCounter++,
+                nom: suspectData.nom,
+                caracteristiques: suspectData.caracteristiques
+            };
+
+            suspects.push(suspect);
+
+            try {
+                const response = await fetch('http://localhost:5000/add-suspect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(suspect)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`${suspect.nom} added to database!`);
+                    clearSuspectForm();
+                    renderSuspectsList();
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert(`Connection error: ${error.message}`);
+            }
+        }
+
+        // Render suspects list
+        function renderSuspectsList() {
+            const container = document.getElementById('suspects-list');
+            if (suspects.length === 0) {
+                container.innerHTML = '<div class="empty-state">No suspects in database</div>';
+                return;
+            }
+
+            container.innerHTML = suspects.map(s => `
+                <div class="suspect-card" style="padding: 15px; margin-bottom: 10px;">
+                    <strong style="font-size: 1.1em;">${s.nom}</strong>
+                    <button class="remove-btn" onclick="removeSuspect(${s.id})" style="float: right; font-size: 0.8em;">DELETE</button>
+                    <div style="clear: both;">
+                        <span class="evidence-badge">${Object.keys(s.caracteristiques).length} characteristics recorded</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Remove suspect
+        async function removeSuspect(id) {
+            const suspect = suspects.find(s => s.id === id);
+            if (!suspect || !confirm(`Delete ${suspect.nom} from database?`)) return;
+
+            suspects = suspects.filter(s => s.id !== id);
+
+            try {
+                await fetch('http://localhost:5000/remove-suspect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nom: suspect.nom })
+                });
+            } catch (error) {
+                console.error('Deletion error:', error);
+            }
+
+            renderSuspectsList();
+        }
+
+        // Collect evidence
+        function collectIndices() {
+            return {
+                empreinte_pointure: document.getElementById('empreinte_pointure').value,
+                adn_genre: document.getElementById('adn_genre').value,
+                groupe_sanguin_scene: document.getElementById('groupe_sanguin_scene').value,
+                cheveux_couleur: document.getElementById('cheveux_couleur').value,
+                arme: document.getElementById('arme').value,
+                mobile_presume: document.getElementById('mobile_presume').value,
+                heure_crime: document.getElementById('heure_crime').value
+            };
+        }
+
+        // Analyze case
+        async function analyzeCase() {
+            if (suspects.length === 0) {
+                alert('Add at least one suspect to the database!');
+                return;
+            }
+
+            const indices = collectIndices();
+
+            try {
+                await fetch('http://localhost:5000/add-indices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ indices })
+                });
+            } catch (error) {
+                console.error('Evidence error:', error);
+            }
+
+            const resultsSection = document.getElementById('results-section');
+            const resultsContainer = document.getElementById('results-container');
+            resultsSection.style.display = 'block';
+            resultsContainer.innerHTML = '<div class="loading"><div class="spinner"></div>ANALYZING EVIDENCE...</div>';
+
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            try {
+                const response = await fetch('http://localhost:5000/run-inference', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data.results);
+                } else {
+                    resultsContainer.innerHTML = `<div class="empty-state">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Display results with DEDUPLICATION FIX
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="empty-state">No suspects match the evidence criteria</div>';
+                return;
+            }
+
+            // DEDUPLICATE RESULTS BY SUSPECT NAME
+            const seen = new Set();
+            const uniqueResults = results.filter(r => {
+                if (seen.has(r.suspect)) {
+                    return false;
+                }
+                seen.add(r.suspect);
+                return true;
+            });
+
+            container.innerHTML = uniqueResults.map((r, i) => {
+                const scoreClass = r.score >= 70 ? 'score-high' : r.score >= 50 ? 'score-medium' : 'score-low';
+                const rank = i === 0 ? 'PRIMARY SUSPECT' : i === 1 ? 'SECONDARY SUSPECT' : i === 2 ? 'TERTIARY SUSPECT' : 'PERSON OF INTEREST';
+                const verdict = r.score >= 80 ? 'HIGHLY PROBABLE' : r.score >= 60 ? 'PROBABLE' : 'LOW PROBABILITY';
+                
+                return `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-name">${rank}: ${r.suspect}</div>
+                            <div class="result-score ${scoreClass}">${r.score}%</div>
+                        </div>
+                        <div style="color: ${r.score >= 70 ? '#d47777' : r.score >= 50 ? '#d4aa77' : '#77c9a9'}; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'EB Garamond', serif;">
+                            ${verdict}
+                        </div>
+                        <div class="result-explanation">${r.explication}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize
+        renderSuspectsList();
+    </script>
+</body>
+</html>
